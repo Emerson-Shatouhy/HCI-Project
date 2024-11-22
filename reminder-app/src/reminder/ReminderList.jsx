@@ -1,14 +1,16 @@
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronRight, Plus, Search } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { useState } from 'react';
 
 const ReminderList = ({ reminders = [], onAddNew = () => { }, onSelectReminder = () => { } }) => {
     const [checkedItems, setCheckedItems] = useState(new Set());
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleCheck = (e, id) => {
-        e.stopPropagation(); // Prevent triggering the onClick of the parent div
+        e.stopPropagation();
         const newCheckedItems = new Set(checkedItems);
         if (checkedItems.has(id)) {
             newCheckedItems.delete(id);
@@ -17,6 +19,11 @@ const ReminderList = ({ reminders = [], onAddNew = () => { }, onSelectReminder =
         }
         setCheckedItems(newCheckedItems);
     };
+
+    const filteredReminders = reminders.filter(reminder =>
+        reminder.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        reminder.date.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <Card>
@@ -27,8 +34,18 @@ const ReminderList = ({ reminders = [], onAddNew = () => { }, onSelectReminder =
                 </Button>
             </CardHeader>
             <CardContent>
+                <div className="mb-4 flex items-center space-x-2">
+                    <Search className="h-4 w-4 text-gray-400" />
+                    <Input
+                        type="text"
+                        placeholder="Search reminders..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1"
+                    />
+                </div>
                 <div className="space-y-2">
-                    {reminders.map((reminder) => (
+                    {filteredReminders.map((reminder) => (
                         <div
                             key={reminder.id}
                             onClick={() => onSelectReminder(reminder)}
