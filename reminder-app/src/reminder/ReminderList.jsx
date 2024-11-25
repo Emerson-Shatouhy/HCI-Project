@@ -14,6 +14,17 @@ const ReminderList = ({ reminders = [], onAddNew = () => { }, onSelectReminder =
         reminder.date.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const handleCheckboxClick = (e, reminder) => {
+        e.stopPropagation();
+        const newCheckedItems = new Set(checkedItems);
+        if (checkedItems.has(reminder.id)) {
+            newCheckedItems.delete(reminder.id);
+        } else {
+            newCheckedItems.add(reminder.id);
+        }
+        setCheckedItems(newCheckedItems);
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -41,21 +52,14 @@ const ReminderList = ({ reminders = [], onAddNew = () => { }, onSelectReminder =
                         <div
                             key={reminder.id}
                             className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                            onClick={() => {
-                                const newCheckedItems = new Set(checkedItems);
-                                if (checkedItems.has(reminder.id)) {
-                                    newCheckedItems.delete(reminder.id);
-                                } else {
-                                    newCheckedItems.add(reminder.id);
-                                }
-                                setCheckedItems(newCheckedItems);
-                                onSelectReminder(reminder);
-                            }}
+                            onClick={() => onSelectReminder(reminder)}
                         >
-                            <Checkbox
-                                className="mr-3 pointer-events-none"
-                                checked={checkedItems.has(reminder.id)}
-                            />
+                            <div onClick={(e) => handleCheckboxClick(e, reminder)}>
+                                <Checkbox
+                                    className="mr-3"
+                                    checked={checkedItems.has(reminder.id)}
+                                />
+                            </div>
                             <div className="flex-1">
                                 <p className={`${checkedItems.has(reminder.id) ? 'line-through text-gray-400' : 'font-medium'}`}>
                                     {reminder.name}
